@@ -1,25 +1,26 @@
-## Build artifacts
+# Build outputs
 bin/
 obj/
+/.vs/
 
-## Visual Studio/VS Code
-.vs/
-.vscode/
+# Publish and WiX caches
+publish/
+.wix/
+
+# Installer artifacts
+/dist/*.wixpdb
+/dist/*.msi
+
+# Certificates (do not commit secrets)
+/dist/*.pfx
+/dist/*.cer
+
+# User-specific
 *.user
 *.suo
-*.sln.docstates
+*.userprefs
 
-## Packages
-*.nupkg
-packages/
-
-## Test results
-TestResult*/
-*.VisualState.xml
-
-## OS
-Thumbs.db
-Desktop.ini
-.DS_Store
+# Logs
+*.log
 
 
