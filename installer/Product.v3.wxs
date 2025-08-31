@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="*"
+           Name="Windows Display Configuration Registry Cleaner"
+           Manufacturer="Windows DCRC"
+           Version="$(var.Version)"
+           Language="1033"
+           UpgradeCode="7F2A4CE6-7BE7-4E9B-9A84-0C7E9E5E79F1">
+
+    <Package InstallerVersion="500"
+             Compressed="yes"
+             InstallScope="perMachine"
+             Platform="x64" />
+
+    <MediaTemplate EmbedCab="yes" />
+
+    <Icon Id="AppIcon" SourceFile="$(var.AppIconPath)" />
+    <Property Id="ARPPRODUCTICON" Value="AppIcon" />
+
+    <MajorUpgrade DowngradeErrorMessage="A newer version of Windows DCRC is already installed." />
+
+    <Property Id="WIXUI_INSTALLDIR" Value="APPLICATIONFOLDER" />
+
+    <UI>
+      <UIRef Id="WixUI_InstallDir" />
+      <Publish Dialog="ExitDialog" Control="Finish" Event="DoAction" Value="LaunchApplication">WIXUI_EXITDIALOGOPTIONALCHECKBOX = 1 AND NOT Installed</Publish>
+    </UI>
+    <WixVariable Id="WixUILicenseRtf" Value="installer\\EULA.rtf" />
+
+    <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOX" Value="1" />
+    <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOXTEXT" Value="Run the Windows Display Configuration Registry Cleaner now?" />
+
+    <Property Id="WixShellExecTarget" Value="[#filMainExe]" />
+    <CustomAction Id="LaunchApplication" BinaryKey="WixCA" DllEntry="WixShellExec" Impersonate="yes" />
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFiles64Folder">
+        <Directory Id="APPLICATIONFOLDER" Name="Windows DCRC">
+          <Component Id="cmpMainExe" Guid="*" Win64="yes">
+            <File Id="filMainExe" Source="$(var.PublishDir)\Windows DCRC.exe" KeyPath="yes" />
+          </Component>
+        </Directory>
+      </Directory>
+      <Directory Id="ProgramMenuFolder">
+        <Directory Id="ApplicationProgramsFolder" Name="Windows DCRC" />
+      </Directory>
+    </Directory>
+
+    <DirectoryRef Id="ApplicationProgramsFolder">
+      <Component Id="cmpShortcut" Guid="*">
+        <Shortcut Id="ApplicationStartMenuShortcut"
+                  Name="Windows DCRC"
+                  Description="Windows Display Configuration Registry Cleaner"
+                  Target="[APPLICATIONFOLDER]Windows DCRC.exe"
+                  WorkingDirectory="APPLICATIONFOLDER" />
+        <RemoveFolder Id="RemoveApplicationProgramsFolder" Directory="ApplicationProgramsFolder" On="uninstall" />
+        <RegistryValue Root="HKCU" Key="Software\WindowsDCRC" Name="installed" Type="integer" Value="1" KeyPath="yes" />
+      </Component>
+    </DirectoryRef>
+
+    <Feature Id="ProductFeature" Title="Windows DCRC" Level="1">
+      <ComponentRef Id="cmpMainExe" />
+      <ComponentRef Id="cmpShortcut" />
+    </Feature>
+
+  </Product>
+</Wix>
+
+

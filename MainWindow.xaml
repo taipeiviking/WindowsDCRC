@@ -15,11 +15,11 @@
                        Margin="0,0,8,0">
                 <Run Text="This app can help speed up your system responding to monitors being plugged in or out."/>
                 <LineBreak/>
-                <Run Text="Everytime you change your display settings, it is saved in the registry as a new entry."/>
+                <Run Text="Every time you change your display settings, Windows saves a new profile in the registry."/>
                 <LineBreak/>
-                <Run Text="Select the confuiguration(s) you wish to remove and delete them."/>
+                <Run Text="Select the configuration(s) you wish to remove and click Delete."/>
                 <LineBreak/>
-                <Run Text="The deleted configurations will be saves as a .reg-file that you can double-clik on to restore them."/>  
+                <Run Text="When deleting, you'll be asked to save a .reg backup that you can double-click to restore later."/>
                 <LineBreak/>
             </TextBlock>
             <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" HorizontalAlignment="Right">

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs" xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
+  <Package
+    Name="Windows Display Configuration Registry Cleaner"
+    Manufacturer="Windows DCRC"
+    Version="$(var.Version)"
+    UpgradeCode="{7F2A4CE6-7BE7-4E9B-9A84-0C7E9E5E79F1}"
+    InstallerVersion="500"
+    Compressed="yes"
+    Scope="perMachine">
+
+    <MajorUpgrade DowngradeErrorMessage="A newer version of Windows DCRC is already installed." />
+    <MediaTemplate EmbedCab="yes" />
+
+    <Icon Id="AppIcon" SourceFile="$(var.AppIconPath)" />
+    <Property Id="ARPPRODUCTICON" Value="AppIcon" />
+
+    <StandardDirectory Id="ProgramFiles64Folder">
+      <Directory Id="APPLICATIONFOLDER" Name="Windows DCRC">
+        <Component Id="cmpMainExe" Guid="*">
+          <File Id="filMainExe" Source="$(var.PublishDir)\Windows DCRC.exe" KeyPath="yes" />
+        </Component>
+      </Directory>
+    </StandardDirectory>
+
+    <StandardDirectory Id="ProgramMenuFolder">
+      <Directory Id="ApplicationProgramsFolder" Name="Windows DCRC" />
+    </StandardDirectory>
+
+    <Component Id="cmpShortcut" Directory="ApplicationProgramsFolder" Guid="*">
+      <Shortcut Id="ApplicationStartMenuShortcut"
+                Name="Windows DCRC"
+                Description="Windows Display Configuration Registry Cleaner"
+                Target="[APPLICATIONFOLDER]Windows DCRC.exe"
+                WorkingDirectory="APPLICATIONFOLDER"
+                Icon="AppIcon" />
+      <RemoveFolder Id="RemoveApplicationProgramsFolder" Directory="ApplicationProgramsFolder" On="uninstall" />
+      <RegistryValue Root="HKCU" Key="Software\WindowsDCRC" Name="installed" Type="integer" Value="1" KeyPath="yes" />
+    </Component>
+
+    <Feature Id="ProductFeature" Title="Windows DCRC" Level="1">
+      <ComponentRef Id="cmpMainExe" />
+      <ComponentRef Id="cmpShortcut" />
+    </Feature>
+
+    <!-- UI customization temporarily removed to resolve build errors. -->
+  </Package>
+</Wix>
+
+
