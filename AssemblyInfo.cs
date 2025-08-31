@@ -37,6 +37,13 @@ namespace WindowsDCRC
             get
             {
                 var asm = Assembly.GetExecutingAssembly();
+                // Prefer generated constant if available
+                var generatedDate = typeof(BuildInfo).GetField("GeneratedBuildDateUtc", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static);
+                if (generatedDate != null)
+                {
+                    var val = generatedDate.GetRawConstantValue()?.ToString();
+                    if (!string.IsNullOrEmpty(val)) return val!;
+                }
                 foreach (var data in asm.GetCustomAttributes<AssemblyMetadataAttribute>())
                 {
                     if (data.Key == "BuildDateUtc") return data.Value ?? string.Empty;

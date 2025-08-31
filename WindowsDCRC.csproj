@@ -72,7 +72,7 @@
     <WriteCodeFragment Language="C#" OutputFile="Properties\AutoVersion.g.cs" AssemblyAttributes="@(_GenAsmAttr)" />
     <!-- Also generate a partial BuildInfo with a constant that the app reads first -->
     <WriteLinesToFile File="Properties\GeneratedVersion.g.cs" Overwrite="true"
-      Lines="namespace WindowsDCRC {&#x0D;&#x0A;    internal static partial class BuildInfo {&#x0D;&#x0A;        internal const string GeneratedVersion = &quot;$(InformationalVersion)&quot;%3B&#x0D;&#x0A;    }&#x0D;&#x0A;}" />
+      Lines="namespace WindowsDCRC {&#x0D;&#x0A;    internal static partial class BuildInfo {&#x0D;&#x0A;        internal const string GeneratedVersion = &quot;$(InformationalVersion)&quot;%3B&#x0D;&#x0A;        internal const string GeneratedBuildDateUtc = &quot;$(BuildTimestamp)&quot;%3B&#x0D;&#x0A;    }&#x0D;&#x0A;}" />
     <!-- Provide build metadata as assembly attributes (read by app) -->
     <ItemGroup>
       <AssemblyMetadata Include="BuildDateUtc" Value="$(BuildTimestamp)" />
