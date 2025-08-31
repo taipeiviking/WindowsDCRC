@@ -1,0 +1,25 @@
+## Build artifacts
+bin/
+obj/
+
+## Visual Studio/VS Code
+.vs/
+.vscode/
+*.user
+*.suo
+*.sln.docstates
+
+## Packages
+*.nupkg
+packages/
+
+## Test results
+TestResult*/
+*.VisualState.xml
+
+## OS
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+
