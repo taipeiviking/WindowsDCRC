@@ -1,0 +1,101 @@
+Windows Display Configuration Registry Cleaner (Windows DCRC) — Project Rules and Guide
+
+Overview
+- Purpose: Provide a safe manager for Windows display configuration records stored under HKLM, allowing users to inspect, back up as .reg, and delete stale/undesired configurations.
+- Registry Root: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\GraphicsDrivers\Configuration
+- App Name: "Widnows Display Configuration Registry Cleaner" (Windows DCRC)
+- Tech Stack: .NET 8 WPF, C#
+
+Core Features and Requirements
+1) Scan and List
+   - Enumerate all immediate subkeys under HKLM\...\Configuration.
+   - For each subkey (configuration entry), display these columns:
+     - Key: registry subkey name under Configuration
+     - SetId: REG_SZ value "SetId"
+     - Timestamp: REG_BINARY value "Timestamp" (FILETIME, 8 bytes) shown in local time
+     - Displays: count of display nodes discovered under this entry
+     - Resolution(s): aggregated from each display node width x height
+     - Position(s): aggregated from each display node (x, y)
+     - Rotation: aggregated from detail values (0°, 90°, 180°, 270° format when mapped)
+     - Scaling: aggregated integer values
+     - Refresh Hz: aggregated rounded values derived from VSyncFreq.Numerator/Denominator
+   - Per-entry discovery details:
+     - Display nodes live under numeric subkeys such as "00", "01", ...
+     - Within each node, use values like PrimSurfSize.cx, PrimSurfSize.cy, Position.cx, Position.cy
+     - Details subkey "00" under each node may contain Rotation, Scaling, VSyncFreq.Numerator, VSyncFreq.Denominator
+   - Scan both Registry64 and Registry32 views and deduplicate by subkey name.
+
+2) UI Behavior
+   - On app load, auto-refresh the list.
+   - Controls shown at top-right: Refresh, Backup .reg, Delete All/Selected.
+   - Grid selection:
+     - Multi-select enabled; selecting any row(s) changes Delete button text from "Delete All" to "Delete Selected".
+     - No selection implies Delete All.
+   - Details pane bound to the selected configuration:
+     - Shows Key, SetId, Timestamp, DisplayCount, Resolution summary.
+     - Shows a nested read-only grid of all display nodes: Width, Height, PositionX, PositionY, Rotation, Scaling, Refresh Hz.
+
+3) Backup as .reg
+   - Button: "Backup .reg".
+   - If selection exists, back up only selected keys; otherwise back up all.
+   - Implementation detail:
+     - Use reg.exe export for each configuration subkey to a temp directory.
+     - Merge into a single .reg file:
+       - Encode in Unicode.
+       - Add standard header: "Windows Registry Editor Version 5.00" + blank line once.
+       - Append each per-key file without its header, preserving blank line separation.
+   - Rationale: Produces a clickable .reg that can be used to re-add entries for test/restore.
+
+4) Delete Selected/All
+   - Requires elevation; the app manifest requests Administrator.
+   - On click, prompt the user for confirmation; warn that deletion cannot be undone.
+   - Delete from both Registry64 and Registry32 views under the Configuration path.
+   - After delete, automatically refresh the list.
+
+5) Refresh
+   - Re-scan the registry and repopulate the grid and details based on current state.
+
+Permissions and Safety
+- Deletion is guarded by a confirmation dialog.
+- Export may require access to HKLM but typically can read without elevation; if access denied, show a clear message.
+- App manifest sets requestedExecutionLevel to requireAdministrator.
+
+Build and Run
+- Using CLI:
+  - dotnet build
+  - dotnet run (elevation will be requested by Windows due to the manifest)
+- Using Visual Studio:
+  - Open the solution: WindowsDCRC.sln
+  - Start with debugging; accept the elevation prompt.
+
+Manual Test Flow
+1) Click "Backup .reg" to save current configurations.
+2) Select one or more entries; click "Delete Selected"; confirm.
+3) Click Refresh; ensure entries are gone.
+4) Double-click the saved .reg to restore entries (accept UAC); click Refresh and verify entries are back.
+
+Non-goals (for now)
+- No CSV export or JSON export.
+- No automatic cleanup heuristics; deletion is manual and explicit.
+
+Code Structure and Conventions
+- UI: MainWindow.xaml defines grid, buttons, and details pane.
+- Logic: MainWindow.xaml.cs contains scanner, model classes, event handlers, and .reg export.
+- Registry path constant: Keep System path exact: SYSTEM\\CurrentControlSet\\Control\\GraphicsDrivers\\Configuration
+- Maintain explicit, readable code; avoid unsafe casts; handle exceptions with user-friendly messages.
+- Preserve existing indentation and formatting style.
+
+Cursor-Specific Guidance
+- When editing UI or logic, keep the button names and bindings stable:
+  - RefreshButton_Click, ExportButton_Click, DeleteButton_Click, ConfigGrid_SelectionChanged
+- Do not remove the admin manifest requirement unless explicitly requested.
+- If you add features, update this .cursorrules and ensure the UI reflects new actions.
+- Prefer additive edits; avoid unrelated refactors.
+
+Future Enhancements (if requested)
+- Filters (e.g., by monitor ID, resolution, rotation).
+- Batch selection helpers.
+- Dark theme styling.
+- Command-line mode to back up and delete via switches.
+
+

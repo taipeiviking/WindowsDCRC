@@ -1,0 +1,85 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <AssemblyName>Windows DCRC</AssemblyName>
+    <RootNamespace>WindowsDCRC</RootNamespace>
+    <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
+    <ApplicationIcon>Assets\app.ico</ApplicationIcon>
+    <!-- Simplified versioning: 1.<Minor> -->
+    <MajorVersion>1</MajorVersion>
+    <MinorCounterFile>Properties\MinorCounter.txt</MinorCounterFile>
+    <!-- Starting value if file is absent -->
+    <MinorCounter>0</MinorCounter>
+    <!-- Prevent SDK from emitting version attributes; we'll generate ours -->
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+    <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
+    <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
+    <GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="Assets\app.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Assets\AppImage_16x16.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Assets\AppImage_32x32.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Assets\AppImage_48x48.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Assets\AppImage_256x256.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Assets\AppImage_FullSize.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <!-- Compute and increment simplified version BEFORE compile, and generate assembly attributes -->
+  <Target Name="ComputeAndGenerateVersion" BeforeTargets="CoreCompile" Condition=" '$(DesignTimeBuild)' != 'true' ">
+    <!-- Read existing minor counter if present -->
+    <ReadLinesFromFile File="$(MinorCounterFile)" ContinueOnError="true">
+      <Output TaskParameter="Lines" ItemName="_MinorLines" />
+    </ReadLinesFromFile>
+    <PropertyGroup>
+      <_MinorText>%( _MinorLines.Identity )</_MinorText>
+      <MinorCounter Condition=" '$(_MinorText)' != '' ">$(_MinorText)</MinorCounter>
+      <_NextMinor>$([MSBuild]::Add($(MinorCounter), 1))</_NextMinor>
+      <InformationalVersion>$(MajorVersion).$(_NextMinor)</InformationalVersion>
+      <FileVersion>$(MajorVersion).$(_NextMinor).0.0</FileVersion>
+      <Version>$(InformationalVersion)</Version>
+      <BuildTimestamp>$([System.DateTime]::UtcNow.ToString("yyyy-MM-dd HH:mm:ss"))</BuildTimestamp>
+    </PropertyGroup>
+    <!-- Persist minor counter so it increments every build -->
+    <WriteLinesToFile File="$(MinorCounterFile)" Lines="$(_NextMinor)" Overwrite="true" />
+    <!-- Generate assembly attributes using WriteCodeFragment to avoid syntax issues -->
+    <ItemGroup>
+      <_GenAsmAttr Include="System.Reflection.AssemblyInformationalVersionAttribute">
+        <_Parameter1>$(InformationalVersion)</_Parameter1>
+      </_GenAsmAttr>
+      <_GenAsmAttr Include="System.Reflection.AssemblyFileVersionAttribute">
+        <_Parameter1>$(FileVersion)</_Parameter1>
+      </_GenAsmAttr>
+    </ItemGroup>
+    <WriteCodeFragment Language="C#" OutputFile="Properties\AutoVersion.g.cs" AssemblyAttributes="@(_GenAsmAttr)" />
+    <!-- Also generate a partial BuildInfo with a constant that the app reads first -->
+    <WriteLinesToFile File="Properties\GeneratedVersion.g.cs" Overwrite="true"
+      Lines="namespace WindowsDCRC {&#x0D;&#x0A;    internal static partial class BuildInfo {&#x0D;&#x0A;        internal const string GeneratedVersion = &quot;$(InformationalVersion)&quot;%3B&#x0D;&#x0A;    }&#x0D;&#x0A;}" />
+    <!-- Provide build metadata as assembly attributes (read by app) -->
+    <ItemGroup>
+      <AssemblyMetadata Include="BuildDateUtc" Value="$(BuildTimestamp)" />
+      <AssemblyMetadata Include="MinorCounter" Value="$(_NextMinor)" />
+    </ItemGroup>
+  </Target>
+
+  <!-- Removed separate IncrementCounters; counters are incremented before compile -->
+
+</Project>
