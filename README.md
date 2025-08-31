@@ -1,6 +1,7 @@
 Windows Display Configuration Registry Cleaner (Windows DCRC)
 
 Overview
+![Windows DCRC UI](Assets/WindowsDCRCmainUI.png)
 - Safely view, back up (.reg), and delete stale Windows display configuration records.
 - Registry path: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\GraphicsDrivers\Configuration
 - Tech stack: .NET 8 WPF (C#), WiX installer (MSI).
