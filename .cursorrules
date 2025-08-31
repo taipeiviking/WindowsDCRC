@@ -84,6 +84,10 @@ Code Structure and Conventions
 - Registry path constant: Keep System path exact: SYSTEM\\CurrentControlSet\\Control\\GraphicsDrivers\\Configuration
 - Maintain explicit, readable code; avoid unsafe casts; handle exceptions with user-friendly messages.
 - Preserve existing indentation and formatting style.
+ - Versioning and Build Date/Time display:
+   - Build number should auto‑increment on build via MSBuild tasks.
+   - Do not change how the code displays Version and Build Date/Time in the UI.
+   - UI reads Version from `BuildInfo.Version` and Build Date/Time from `BuildInfo.BuildDateUtc`; keep this retrieval pattern stable.
 
 Cursor-Specific Guidance
 - When editing UI or logic, keep the button names and bindings stable:
