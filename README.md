@@ -25,10 +25,13 @@ Build (Dev)
    - dotnet build
    - dotnet run
 
+Downloads
+- Installer (MSI): [WindowsDCRC_1.78.0.0.msi](installer/WindowsDCRC_1.78.0.0.msi)
+- Portable app (.exe): [WindowsDCRC.exe](installer/WindowsDCRC.exe)
+
 Installer (MSI)
 - Use tools/BuildInstaller.ps1 to publish a self-contained single-file app and build an MSI with WiX 3 (includes Finish-page checkbox to launch the app):
   - pwsh -NoProfile -ExecutionPolicy Bypass -File .\tools\BuildInstaller.ps1
-- Outputs: dist/WindowsDCRC_<version>.msi
 
 Optional Signing
 - Provide a code-signing PFX to sign the EXE and MSI:
