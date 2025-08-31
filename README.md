@@ -25,7 +25,7 @@ Build (Dev)
    - dotnet build
    - dotnet run
 
-Downloads
+Downloads Windows 10/11
 - Installer (MSI): [WindowsDCRC_1.78.0.0.msi](installer/WindowsDCRC_1.78.0.0.msi)
 - Portable app (.exe): [WindowsDCRC.exe](installer/WindowsDCRC.exe)
 
